@@ -1,33 +1,34 @@
-int[][] grid = {
-  {5, 3, 0, 0, 7, 0, 0, 0, 0},
-  {6, 0, 0, 1, 9, 5, 0, 0, 0},
-  {0, 9, 8, 0, 0, 0, 0, 6, 0},
-  {8, 0, 0, 0, 6, 0, 0, 0, 3},
-  {4, 0, 0, 8, 0, 3, 0, 0, 1},
-  {7, 0, 0, 0, 2, 0, 0, 0, 6},
-  {0, 6, 0, 0, 0, 0, 2, 8, 0},
-  {0, 0, 0, 4, 1, 9, 0, 0, 5},
-  {0, 0, 0, 0, 8, 0, 0, 7, 9}
-};
-
+int[][] grid = new int[9][9];
+boolean[][] locked;
 int cell = 60;
 int[] selected = null;
 int buttonY = 560;
-boolean[][] locked = new boolean[9][9];
 
 void setup() {
   size(540, 620);
   textAlign(CENTER, CENTER);
   textSize(24);
-  
+  String[] lines = loadStrings("Data.txt");
   int r = 0;
-  while (r < 9) {
+  while (r < lines.length) {
+    String[] nums = splitTokens(lines[r], " ,");
     int c = 0;
-    while (c < 9) {
-      locked[r][c] = (grid[r][c] != 0);
+    while (c < nums.length) {
+      grid[r][c] = Integer.parseInt(nums[c]);
       c++;
     }
     r++;
+  }
+
+  locked = new boolean[9][9];
+  r = 0;
+  while (r < 9) {
+    int c = 0;
+    while (c < 9) {
+      locked[r][c] = grid[r][c] != 0;
+      c++;
+    }
+    r++;ป
   }
 }
 
@@ -36,17 +37,21 @@ void draw() {
   drawGrid();
   drawNumbers();
   drawButtons();
+  Finish();
 }
 
 void drawGrid() {
   int i = 0;
   while (i <= 9) {
-    strokeWeight((i % 3 == 0) ? 3 : 1);
+    if (i % 3 == 0) {
+      strokeWeight(3);
+    } else {
+      strokeWeight(1);
+    }
     line(0, i * cell, 9 * cell, i * cell);
     line(i * cell, 0, i * cell, 9 * cell);
     i++;
   }
-  
   if (selected != null) {
     int r = selected[0];
     int c = selected[1];
@@ -79,15 +84,15 @@ void drawNumbers() {
 }
 
 void drawButtons() {
-  textSize(20);
+  textSize(30);
   int i = 0;
   while (i < 9) {
     int x = i * 60;
     int y = buttonY;
-    fill(200);
-    rect(x, y, 60, 50);
+    fill(220);
+    rect(x, y, 60, 60);
     fill(0);
-    text(str(i + 1), x + 30, y + 25);
+    text(str(i + 1), x + 30, y + 30);
     i++;
   }
 }
@@ -99,7 +104,7 @@ void mousePressed() {
     if (r >= 0 && r < 9 && c >= 0 && c < 9) {
       selected = new int[]{r, c};
     }
-  } else if (mouseY >= buttonY && mouseY <= buttonY + 50) {
+  } else if (mouseY >= buttonY && mouseY <= buttonY + 60) {
     int i = mouseX / 60;
     if (i >= 0 && i < 9 && selected != null) {
       int r = selected[0];
@@ -134,4 +139,25 @@ boolean isConflict(int row, int col, int val) {
     r++;
   }
   return false;
+}
+
+boolean Finish() {
+  int r = 0;
+  while (r < 9) {
+    int c = 0;
+    while (c < 9) {
+      if (grid[r][c] == 0) return false;
+      if (isConflict(r, c, grid[r][c])) return false;
+      c++;
+    }
+    r++;
+  }
+
+  background(255);
+  fill(0);
+  textSize(50);
+  textAlign(CENTER, CENTER);
+  text("You Win !", width / 2, height / 2);
+  noLoop();
+  return true;
 }
