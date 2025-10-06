@@ -16,7 +16,7 @@ PVector selected = null;
 int buttonY = 540;
 
 void setup() {
-  size(750, 750);
+  size(540, 620);
   textAlign(CENTER, CENTER);
   textSize(24);
   
